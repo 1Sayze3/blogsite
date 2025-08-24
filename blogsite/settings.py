@@ -1,4 +1,4 @@
-# 1) blogsite/settings.py (key parts)
+
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
