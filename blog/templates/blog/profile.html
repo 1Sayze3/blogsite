@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.username }} · Profile{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card p-3">
+      <div class="text-center">
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" class="avatar mb-2" alt="avatar">
+        {% else %}
+          <img src="https://via.placeholder.com/96" class="avatar mb-2" alt="avatar">
+        {% endif %}
+        <h5 class="mb-0">@{{ profile_user.username }}</h5>
+        <small class="text-muted">{{ profile.location }}</small>
+      </div>
+      <hr>
+      <p>{{ profile.bio|default:"No bio yet." }}</p>
+      {% if profile.website %}
+        <p><a href="{{ profile.website }}" target="_blank" rel="noopener">Website</a></p>
+      {% endif %}
+    </div>
+
+    {% if user == profile_user %}
+      <div class="card p-3 mt-3">
+        <h6>Edit Profile</h6>
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+          {{ form.as_p }}
+          <button class="btn btn-primary w-100">Save</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="col-md-8">
+    <h5 class="mb-3">Posts by {{ profile_user.username }}</h5>
+    {% for p in profile_user.posts.all %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></h5>
+          <p class="card-text">{{ p.content|truncatechars:220 }}</p>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">No posts yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

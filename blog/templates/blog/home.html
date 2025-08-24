@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Home · Blogsite{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    {% for p in posts %}
+      <div class="card mb-4">
+        {% if p.featured_image %}
+          <img src="{{ p.featured_image.url }}" class="card-img-top" alt="">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title"><a href="{{ p.get_absolute_url }}" class="text-decoration-none">{{ p.title }}</a></h5>
+          <p class="card-text text-muted">by <a href="{% url 'profile' p.author.username %}">{{ p.author.username }}</a> · {{ p.created_at|date:"M d, Y" }}</p>
+          <p class="card-text">{{ p.content|truncatechars:180 }}</p>
+          <a href="{{ p.get_absolute_url }}" class="btn btn-sm btn-outline-primary">Read more</a>
+        </div>
+      </div>
+    {% empty %}
+      <p>No posts yet.</p>
+    {% endfor %}
+  </div>
+
+  <div class="col-lg-4">
+    <div class="mb-4">
+      <h5 class="mb-3">Trending</h5>
+      <ul class="list-group">
+        {% for t in trending %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a class="text-decoration-none" href="{{ t.get_absolute_url }}">{{ t.title|truncatechars:40 }}</a>
+            <span class="badge text-bg-secondary">{{ t.view_count }}</span>
+          </li>
+        {% empty %}
+          <li class="list-group-item">Nothing trending yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Add a new post</h5>
+        {% if user.is_authenticated %}
+          <form method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{ post_form.as_p }}
+            <div class="mb-3">
+              <label class="form-label">Gallery images (optional)</label>
+              <input type="file" name="gallery" multiple class="form-control" />
+            </div>
+            <button class="btn btn-primary w-100">Publish</button>
+          </form>
+        {% else %}
+          <p class="text-muted">Please <a href="{% url 'login' %}">login</a> to post.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
